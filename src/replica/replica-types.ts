@@ -191,7 +191,7 @@ export interface IReplicaDocDriver extends IReplicaConfig {
   /** Returns if the doc driver has been closed or not. */
   isClosed(): boolean;
 
-  fs: {
+  fs?: {
     stat: (path:string) => Promise<boolean>
   }
 

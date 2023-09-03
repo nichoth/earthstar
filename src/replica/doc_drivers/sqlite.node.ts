@@ -43,14 +43,14 @@ export class DocDriverSqlite implements IReplicaDocDriver {
   _isClosed = false;
   _db: SqliteDatabase = null as unknown as SqliteDatabase;
   _maxLocalIndex: number;
-  fs: {
+  fs?: {
     stat: (path:string) => Promise<boolean>;
   };
 
   //--------------------------------------------------
   // LIFECYCLE
 
-  close(erase: boolean): Promise<void> {
+  async close(erase: boolean): Promise<void> {
     logger.debug("close");
     if (this._isClosed) {
       throw new ReplicaIsClosedError();
@@ -61,11 +61,17 @@ export class DocDriverSqlite implements IReplicaDocDriver {
     // delete the sqlite file
     if (erase === true && this._filename !== ":memory:") {
       logger.log(`...close: and erase`);
+
+      // try this.fs, then try node fs
       try {
-        fs.rmSync(this._filename);
+        await this.fs.stat(this._filename) 
       } catch (err) {
-        logger.error("Failed to delete Sqlite file.");
-        logger.error(err);
+        try {
+          fs.rmSync(this._filename);
+        } catch (err) {
+          logger.error("Failed to delete Sqlite file.");
+          logger.error(err);
+        }
       }
     }
     this._isClosed = true;

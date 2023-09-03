@@ -7,7 +7,7 @@ import { Query } from "../../query/query-types.ts";
 type SharedSqliteOpts = {
   share:ShareAddress;
   filename:string;
-  fs: {
+  fs?: {
     stat: (path:string) => Promise<boolean>
   }
 }
