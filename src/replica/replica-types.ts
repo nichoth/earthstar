@@ -9,7 +9,6 @@ import { ValidationError } from "../util/errors.ts";
 import { Replica } from "./replica.ts";
 import {
   DefaultFormats,
-  FormatConfigType,
   FormatsArg,
   FormatsConfigRecord,
 } from "../formats/format_types.ts";
@@ -191,6 +190,10 @@ export interface IReplicaDocDriver extends IReplicaConfig {
 
   /** Returns if the doc driver has been closed or not. */
   isClosed(): boolean;
+
+  fs: {
+    stat: (path:string) => Promise<boolean>
+  }
 
   /**
    * Close the replica Driver.

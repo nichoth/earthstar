@@ -11,14 +11,12 @@ import {
   CREATE_INDEXES_QUERY,
   DELETE_CONFIG_QUERY,
   DELETE_EXPIRED_DOC_QUERY,
-  GET_ENCODING_QUERY,
   makeDocQuerySql,
   MAX_LOCAL_INDEX_QUERY,
   ReplicaSqliteOpts,
   SELECT_CONFIG_CONTENT_QUERY,
   SELECT_EXPIRED_DOC_QUERY,
   SELECT_KEY_CONFIG_QUERY,
-  SET_ENCODING_QUERY,
   UPSERT_CONFIG_QUERY,
   UPSERT_DOC_QUERY,
 } from "./sqlite.shared.ts";
@@ -45,6 +43,9 @@ export class DocDriverSqlite implements IReplicaDocDriver {
   _isClosed = false;
   _db: SqliteDatabase = null as unknown as SqliteDatabase;
   _maxLocalIndex: number;
+  fs: {
+    stat: (path:string) => Promise<boolean>;
+  };
 
   //--------------------------------------------------
   // LIFECYCLE
@@ -80,8 +81,8 @@ export class DocDriverSqlite implements IReplicaDocDriver {
   constructor(opts: ReplicaSqliteOpts) {
     this._filename = opts.filename;
     this.share = "NOT_INITIALIZED";
+    this.fs = opts.fs
 
-    // check if file exists
     // check if file exists
     if (opts.mode === "create") {
       if (opts.filename !== ":memory:" && fs.existsSync(opts.filename)) {

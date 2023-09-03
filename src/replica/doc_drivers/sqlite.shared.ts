@@ -4,22 +4,22 @@ import { Query } from "../../query/query-types.ts";
 
 // types
 
-export interface ReplicaSqliteOptsCreate {
-  mode: "create";
-  share: ShareAddress;
-  filename: string; // must not exist
+type SharedSqliteOpts = {
+  share:ShareAddress;
+  filename:string;
+  fs: {
+    stat: (path:string) => Promise<boolean>
+  }
 }
 
-export interface ReplicaSqliteOptsOpen {
-  mode: "open";
-  share: ShareAddress | null;
-  filename: string; // must exist
+export type ReplicaSqliteOptsCreate = SharedSqliteOpts & {
+  mode: "create"
 }
-
-export interface ReplicaSqliteOptsCreateOrOpen {
-  mode: "create-or-open";
-  share: ShareAddress;
-  filename: string; // may or may not exist
+export type ReplicaSqliteOptsOpen = SharedSqliteOpts & {
+  mode:"open"
+}
+export type ReplicaSqliteOptsCreateOrOpen = SharedSqliteOpts & {
+  mode:'create-or-open'
 }
 
 export type ReplicaSqliteOpts =
